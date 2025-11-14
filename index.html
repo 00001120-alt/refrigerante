@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Refrigerant Line Sizing</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #e7f1ff;
+    }
+
+    header {
+        background: #003366;
+        color: white;
+        padding: 20px 40px;
+        font-size: 26px;
+        font-weight: bold;
+    }
+
+    .main {
+        padding: 40px;
+        max-width: 1100px;
+        margin: auto;
+        background: white;
+        margin-top: 30px;
+        border-radius: 12px;
+        box-shadow: 0 0 20px #9db5d6;
+    }
+
+    h2 {
+        margin-top: 40px;
+        color: #003366;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+    }
+
+    label {
+        font-weight: bold;
+        margin-bottom: 6px;
+        display: block;
+        color: #003366;
+    }
+
+    select, input[type="text"] {
+        width: 90%;
+        padding: 8px;
+        font-size: 16px;
+        border: 2px solid #003366;
+        border-radius: 6px;
+        outline: none;
+        margin-bottom: 20px;
+    }
+
+    button {
+        background: #003366;
+        color: white;
+        padding: 12px 25px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-right: 15px;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #0055aa;
+    }
+
+    #result-box {
+        margin-top: 30px;
+        background: #f4f8ff;
+        border-left: 6px solid #003366;
+        padding: 20px;
+        min-height: 120px;
+        white-space: pre-line;
+        font-size: 16px;
+        border-radius: 6px;
+    }
+
+    ul {
+        margin-left: 20px;
+        margin-top: 10px;
+    }
+
+    .logo {
+        width: 150px;
+        margin-bottom: 20px;
+    }
+
+</style>
+</head>
+<body>
+
+<header>
+    Refrigerant Line Sizing — Sistema Profesional
+</header>
+
+<div class="main">
+
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Uca_logo.jpg/640px-Uca_logo.jpg" 
+         alt="logo" class="logo">
+
+    <div class="form-grid">
+        <div>
+            <label>Units of Measurement:</label>
+            <select id="units">
+                <option>°F - ft - Btu/h</option>
+                <option>°C - m - kW</option>
+            </select>
+
+            <label>Refrigerant:</label>
+            <select id="refrigerant">
+                <option>134a</option>
+                <option>404A</option>
+                <option>407C</option>
+                <option>410A</option>
+                <option>22</option>
+                <option>32</option>
+                <option>290</option>
+            </select>
+
+            <label>Refrigerant Line:</label>
+            <select id="lineType">
+                <option>Liquid</option>
+                <option>Suction</option>
+            </select>
+
+            <label>Refrigerant Line OD (in):</label>
+            <select id="odMode">
+                <option>Auto Select</option>
+                <option>1/4</option>
+                <option>5/16</option>
+                <option>3/8</option>
+                <option>1/2</option>
+                <option>5/8</option>
+                <option>3/4</option>
+                <option>7/8</option>
+                <option>1-1/8</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Evaporator Temp:</label>
+            <input type="text" id="tevap" placeholder="Ej: 40">
+
+            <label>Liquid Temp:</label>
+            <input type="text" id="tliq" placeholder="Ej: 100">
+
+            <label>Equivalent Length:</label>
+            <input type="text" id="length" placeholder="ft o m">
+
+            <label>Vertical Height:</label>
+            <input type="text" id="height" placeholder="Subida/bajada (+/-)">
+
+            <label>System Capacity:</label>
+            <input type="text" id="capacity" placeholder="Btu/h o kW">
+        </div>
+    </div>
+
+    <div>
+        <button onclick="calculate()">Select</button>
+        <button onclick="clearForm()">Clear</button>
+    </div>
+
+    <div id="result-box">
+        Introduce los datos y presiona "Select".
+    </div>
+
+    <h2>Application Notes</h2>
+
+    <ul>
+        <li><strong>Liquid Line:</strong>
+            <ul>
+                <li>Pérdida de temperatura recomendada: 1°F–2°F</li>
+                <li>Velocidad máxima: 300 fpm</li>
+            </ul>
+        </li>
+
+        <li><strong>Suction Line:</strong>
+            <ul>
+                <li>Caída de temperatura: &lt; 2°F</li>
+                <li>Velocidad: &gt; 750 fpm (horizontal), &gt; 1500 fpm (riser)</li>
+                <li>Pendiente: 1/2" por cada 100 ft hacia el compresor</li>
+            </ul>
+        </li>
+    </ul>
+
+</div>
+
+<script>
+function parseNumber(id) {
+    const value = document.getElementById(id).value.trim().replace(",", ".");
+    if (value === "") return NaN;
+    return Number(value);
+}
+
+const sizes = ["1/4","5/16","3/8","1/2","5/8","3/4","7/8","1-1/8"];
+
+function nextSize(size) {
+    const idx = sizes.indexOf(size);
+    if (idx === -1 || idx === sizes.length - 1) return size;
+    return sizes[idx + 1];
+}
+
+function capacityToTons(capacity, units) {
+    if (units === "°C - m - kW") return capacity / 3.517;
+    return capacity / 12000;
+}
+
+function autoSelectSize(lineType, tons) {
+    if (lineType === "Liquid") {
+        if (tons <= 1) return "1/4";
+        if (tons <= 2) return "3/8";
+        if (tons <= 3) return "1/2";
+        if (tons <= 5) return "5/8";
+        if (tons <= 8) return "3/4";
+        return "7/8";
+    } else {
+        if (tons <= 1.5) return "3/8";
+        if (tons <= 3) return "1/2";
+        if (tons <= 5) return "5/8";
+        if (tons <= 8) return "3/4";
+        if (tons <= 12) return "7/8";
+        return "1-1/8";
+    }
+}
+
+function calculate() {
+    const units = document.getElementById("units").value;
+    const refrigerant = document.getElementById("refrigerant").value;
+    const lineType = document.getElementById("lineType").value;
+    const odMode = document.getElementById("odMode").value;
+
+    const tevap = parseNumber("tevap");
+    const tliq = parseNumber("tliq");
+    const length = parseNumber("length");
+    const height = parseNumber("height");
+    const capacity = parseNumber("capacity");
+
+    const resultBox = document.getElementById("result-box");
+
+    if (isNaN(capacity) || capacity <= 0) {
+        resultBox.textContent = "❌ Ingresa una capacidad válida.";
+        return;
+    }
+
+    const tons = capacityToTons(capacity, units);
+
+    let selectedSize;
+    let modeText;
+
+    if (odMode === "Auto Select") {
+        selectedSize = autoSelectSize(lineType, tons);
+        modeText = "Selección automática";
+    } else {
+        selectedSize = odMode;
+        modeText = "Tamaño elegido manualmente";
+    }
+
+    let notes = [];
+
+    if (!isNaN(length) && length > 50) {
+        const bigger = nextSize(selectedSize);
+        notes.push(`Longitud alta (${length}). Aumentar tamaño: ${selectedSize} → ${bigger}`);
+        selectedSize = bigger;
+    }
+
+    if (!isNaN(height) && height > 10 && lineType === "Suction") {
+        const bigger = nextSize(selectedSize);
+        notes.push(`Riser alto (${height}). Aumentar tamaño: ${selectedSize} → ${bigger}`);
+        selectedSize = bigger;
+    }
+
+    const deltaT = (!isNaN(tevap) && !isNaN(tliq))
+        ? Math.abs(tliq - tevap) * 0.02
+        : 1.5;
+
+    let text = "";
+    text += `📌 Refrigerant Line Sizing\n\n`;
+    text += `Refrigerant: R-${refrigerant}\n`;
+    text += `Tipo de línea: ${lineType}\n`;
+    text += `Capacidad: ${capacity} (${tons.toFixed(2)} TR)\n`;
+    text += `Modo: ${modeText}\n\n`;
+    text += `👉 Tamaño seleccionado: ${selectedSize} pulgadas\n\n`;
+    text += `Caída de temperatura estimada: ~${deltaT.toFixed(2)}°\n\n`;
+
+    if (notes.length > 0) {
+        text += `Notas:\n- ${notes.join("\n- ")}\n\n`;
+    }
+
+    text += `Este resultado es estimado. Verificar recomendaciones del fabricante.`;
+
+    resultBox.textContent = text;
+}
+
+function clearForm() {
+    document.getElementById("units").value = "°F - ft - Btu/h";
+    document.getElementById("refrigerant").value = "134a";
+    document.getElementById("lineType").value = "Liquid";
+    document.getElementById("odMode").value = "Auto Select";
+
+    document.getElementById("tevap").value = "";
+    document.getElementById("tliq").value = "";
+    document.getElementById("length").value = "";
+    document.getElementById("height").value = "";
+    document.getElementById("capacity").value = "";
+
+    document.getElementById("result-box").textContent =
+        "Introduce los datos y presiona \"Select\".";
+}
+</script>
+
+</body>
+</html>
