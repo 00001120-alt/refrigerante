@@ -1,0 +1,224 @@
+/* ===== Estilos generales ===== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.site-header {
+    background: linear-gradient(to right, #111827, #4b5563);
+    color: #e5e7eb;
+    padding: 0.75rem 1.5rem;
+    text-align: center;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.site-main {
+    max-width: 1120px;
+    margin: 1.5rem auto 3rem;
+    padding: 0 1rem;
+}
+
+.site-footer {
+    text-align: center;
+    padding: 0.75rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* ===== Hero ===== */
+
+.hero {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.hero h1 {
+    font-family: "Georgia", "Times New Roman", serif;
+    font-weight: 400;
+    font-size: 2.3rem;
+    margin-bottom: 0.25rem;
+    text-transform: lowercase;
+}
+
+.hero p {
+    color: #6b7280;
+    margin: 0;
+}
+
+/* ===== Cards ===== */
+
+.card {
+    background: white;
+    border-radius: 0.9rem;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.10);
+    margin-bottom: 1.5rem;
+}
+
+.card h2 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* ===== Formularios ===== */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1rem 1.5rem;
+    align-items: flex-end;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.45rem 0.55rem;
+    border-radius: 0.45rem;
+    border: 1px solid #d1d5db;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    background-color: #f9fafb;
+}
+
+.form-group small {
+    display: block;
+    font-size: 0.7rem;
+    color: #6b7280;
+    margin-top: 0.2rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+    background-color: #ffffff;
+}
+
+.form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.btn {
+    border-radius: 9999px;
+    border: 1px solid #d1d5db;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    background: white;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn.primary {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.btn.primary:hover {
+    background: #1d4ed8;
+}
+
+.btn:hover {
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+}
+
+/* ===== Alertas ===== */
+
+.alert {
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+}
+
+.alert-error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.alert-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.alert-ok {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.hidden {
+    display: none;
+}
+
+/* ===== Tablas ===== */
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+
+thead {
+    background: #f9fafb;
+}
+
+th,
+td {
+    padding: 0.35rem 0.5rem;
+    text-align: right;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+th:first-child,
+td:first-child {
+    text-align: left;
+}
+
+tbody tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+tbody tr:hover {
+    background: #e5efff;
+}
+
+.row-selected {
+    background: #dbeafe !important;
+    font-weight: 600;
+}
+
+/* ===== Otros ===== */
+
+.disclaimer {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin-top: 0.7rem;
+}
